@@ -1,0 +1,15 @@
+server {
+    listen    80;
+	server_name localhost;
+	location / {
+	
+	   user {{ lighthouse_vcs }};
+		index index.html index.htm index.php;
+
+		charset utf-8;
+
+		access_log /var/log/nginx/mysite.com.access.log;
+		error_log /var/log/nginx/mysite.com.error.log info;
+	
+	}
+}
