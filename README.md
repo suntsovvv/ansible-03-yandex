@@ -186,5 +186,5 @@ clickhouse-01              : ok=4    changed=0    unreachable=0    failed=0    s
 lighthouse-01              : ok=8    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 vector-01                  : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 ```   
-Описание Playbook:
+Описание Playbook: https://github.com/suntsovvv/ansible-03-yandex/blob/main/playbook/README.md
 
