@@ -3,7 +3,7 @@ server {
 	server_name localhost;
 	location / {
 	
-	   user {{ lighthouse_vcs }};
+	   root {{ lighthouse_local_dir }};
 		index index.html index.htm index.php;
 
 		charset utf-8;

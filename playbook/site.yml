@@ -41,7 +41,7 @@
 - name: Install Vector
   hosts: vector
   tags:
-    - vector  
+    - vector
   handlers:
     - name: Reload vector
       become: true
@@ -53,7 +53,7 @@
       ansible.builtin.get_url:
         url: "https://packages.timber.io/vector/{{ vector_version }}/vector-{{ vector_version }}-1.x86_64.rpm"
         dest: "./vector-{{ vector_version }}-1.x86_64.rpm"
-        mode: 0777"
+        mode: "0777"
     - name: Install vector packages
       become: true
       ansible.builtin.yum:
@@ -67,57 +67,49 @@
         mode: "0777"
         validate: vector validate --no-environment --config-yaml %s
 
-- name: Install nginx
+- name: Install Lighthouse
   hosts: lighthouse
   tags:
-   - nginx
+    - lighthouse
+    - nginx
   handlers:
     - name: Start-nginx
       become: true
-      ansible.builtin.command: 
+      ansible.builtin.command:
         cmd: nginx
     - name: Reload-nginx
       become: true
-      ansible.builtin.command: 
+      ansible.builtin.command:
         cmd: nginx -s reload
-  tasks:
-    - name: NGINX | Install epel-release
+  pre_tasks:
+    - name: Install git
+      become: true
+      ansible.builtin.yum:
+        name: git
+        state: present
+    - name: Install epel-release
       become: true
       ansible.builtin.yum:
         name: epel-release
         state: present
-    - name: NGINX | Install NGINX
+  tasks:
+    - name: Install Nginx
       become: true
       ansible.builtin.yum:
         name: nginx
         state: present
       notify: Start-nginx
-    - name: NGINX | Create general config
+    - name: Flush handlers
+      ansible.builtin.meta: flush_handlers
+    - name: Apply nginx config
       become: true
       ansible.builtin.template:
         src: templates/nginx.conf.j2
         dest: /etc/nginx/nginx.conf
         mode: "0777"
       notify: Reload-nginx
-
-- name: Install Lighthouse
-  hosts: lighthouse
-  tags:
-    - lighthouse
-  handlers:
-    - name: Reload-nginx
-      become: true
-      ansible.builtin.command: 
-        cmd: nginx -s reload
-  pre_tasks:
-    - name: Lighthouse| install git
-      become: true
-      become_user: user
-      ansible.builtin.yum:
-        name: git
-        state: present
-  tasks:
     - name: Lighthouse | Copy from git
+      become: true
       ansible.builtin.git:
         repo: "{{ lighthouse_vcs }}"
         version: master
@@ -129,4 +121,6 @@
         dest: /etc/nginx/conf.d/defult.conf
         mode: "0777"
       notify: Reload-nginx
-  
+    - name: Print address to connect
+      ansible.builtin.debug:
+        msg: "Lighthouse is available at http://{{ ansible_host }}:{{ lighthouse_port }}/"
